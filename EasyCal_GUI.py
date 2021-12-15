@@ -1,16 +1,56 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import *
+import tkinter as tk
+import pathlib
+import sys
+import os
 
-if __name__ == '__main__':
-    
+def blank(string):
+    blank = tk.Frame(string, width=20, height=50)
+    blank.pack()
 
-    root = Tk()
-    frm = ttk.Frame(root, padding = 10)
-    frm.grid()
+flag = 0
+node = 0
+def numWork():
+    global flag
+    global node
+    file = pathlib.Path('~/temp.txt').touch(exist_ok=True)
+    temp = pathlib.Path('~/temp.txt').expanduser()
 
-    ttk.Label(frm, text = 'Hello').grid(column = 0, row = 0)
+def numInt(n, m):
+    try:
+        if m[0] == '+':
+            string = int(n) + int(m[1:])
+        elif m[0]== '-':
+            string = int(n) - int(m[1:])
+        elif m[0] == 'x':
+            string = int(n) * int(m[1:])
+        elif m[0] == '/':
+            string = int(n) / int(m[1:])
 
-    ttk.Button(frm, text = 'Quit', command = root.destroy).grid(column = 1, row = 0)
+        temp = pathlib.Path('~/temp.txt').expanduser()
+        temp.write_text('\n' + str(string) + '\n')
+    except:
+        temp = pathlib.Path('~/temp.txt').expanduser()
+        temp.write_text('\nError')
 
-    root.mainloop()
+def numFloat(n, m):
+    try:
+        if m[0] == '+':
+            string = float(n) + float(m[1:])
+        elif m[0]== '-':
+            string = float(n) - float(m[1:])
+        elif m[0] == 'x':
+            string = float(n) * float(m[1:])
+        elif m[0] == '/':
+            string = float(n) / float(m[1:])
+        
+        if flag == 0:
+            temp = pathlib.Path('~/temp.txt').expanduser()
+            temp.write_text('\n' + str(string) + '\n')
+        else:
+            temp = pathlib.Path('~/temp.txt').expanduser()
+            temp.write_text('\n' + str(string))
+    except:
+        temp = pathlib.Path('~/temp.txt').expanduser()
+        temp.write_text('\nError')
+
+def decimal(n):
