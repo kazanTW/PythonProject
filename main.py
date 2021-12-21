@@ -1,138 +1,167 @@
 from __future__ import annotations
-
-import tkinter as tk
-import tkinter.font as font
 from functools import partial
+from typing import Literal
+
+from display import Display
 
 
 class App():
     def __init__(self, display: Display):
         self.display = display
+
         self.display.on_press('AC', self.on_ac_pressed)
         self.display.on_press('DEL', self.on_del_pressed)
-        self.display.on_press('%', self.on_percent_pressed)
         self.display.on_press('=', self.on_equal_pressed)
         self.display.on_press('.', self.on_dot_pressed)
-        self.display.on_press('+', self.on_plus_pressed)
-        self.display.on_press('-', self.on_minus_pressed)
-        self.display.on_press('x', self.on_multiple_pressed)
-        self.display.on_press('/', self.on_divide_pressed)
-        self.display.on_press('+/-', self.on_positiveAndNegative_pressed)
+        self.display.on_press('+/-', self.on_plusminus_pressed)
+
+        for op in ['%', '+', '-', 'x', '/']:
+            self.display.on_press(op, partial(self.on_op_pressed, op))
         for num in range(10):
             # bind the first argument to `num`
             self.display.on_press(str(num), partial(
-                self.on_number_pressed, num))
+                self.on_number_pressed, str(num)))
 
-    def on_number_pressed(self, num, *args, **kwargs):
+        self.display.on_keypress('<Control-c>', self.on_ctrl_c_pressed)
+        
+        self.state: Literal['init'] | Literal['input'] = 'init'
+        self.input_string = ''
+        self.num = 0
+        self.op: str | None = None
+
+        # display 0 initially
+        self.update_display()
+
+    def update_display(self):
+        self.display.display_text(self.get_display_string())
+
+    def get_display_string(self):
+        if self.state == 'init':
+            return str(self.num)
+        else:
+            if len(self.input_string) == 0:
+                return '0'
+            else:
+                return self.input_string
+
+    def on_op_pressed(self, op: str, *args, **kwargs):
+        print(f'op {op} is pressed')
+        print(args, kwargs)
+        if self.state == 'init':
+            self.op = op
+        else:
+            # perform last op
+            if self.op is None:
+                self.num = float(self.input_string)
+            else:
+                self.num = perform_op(
+                    self.op, self.num, float(self.input_string))
+            self.input_string = str(self.num)
+
+            self.state = 'init'
+            self.op = op
+        self.update_display()
+
+    def on_number_pressed(self, num: str, *args, **kwargs):
         print(f'number {num} is pressed')
         print(args, kwargs)
+        if is_float(self.input_string + str(num)):
+            if self.state == 'init':
+                self.input_string = ''
+            self.state = 'input'
+            self.input_string += num
+            self.update_display()
+        else:
+            print(f'Input {num} not allowed here')
 
     def on_ac_pressed(self, *args, **kwargs):
         print('ac is pressed')
         print(args, kwargs)
+        self.input_string = ''
+        self.num = 0
+        self.op = None
+        self.update_display()
 
     def on_del_pressed(self, *args, **kwargs):
         print('del is pressed')
         print(args, kwargs)
-
-    def on_percent_pressed(self, *args, **kwargs):
-        print('% is pressed')
-        print(args, kwargs)
+        if self.state == 'input':
+            if len(self.input_string) != 0:
+                self.input_string = self.input_string[1:]
+            self.update_display()
+        else:
+            self.input_string = ''
+            self.num = 0
+            self.op = None
+            self.update_display()
 
     def on_equal_pressed(self, *args, **kwargs):
         print('= is pressed')
         print(args, kwargs)
+        # almost identical to on_op_pressed
+        # perform last op
+        if self.op is None:
+            self.num = float(self.input_string)
+        else:
+            self.num = perform_op(self.op, self.num, float(self.input_string))
+        self.input_string = str(self.num)
+
+        self.state = 'init'
+        self.op = None
+        self.update_display()
 
     def on_dot_pressed(self, *args, **kwargs):
-        print('. is pressed')
+        print(f'. is pressed')
         print(args, kwargs)
-    
-    def on_plus_pressed(self, *args, **kwargs):
-        print('+ is pressed')
-        print(args, kwargs)
+        if is_float(self.input_string + '.'):
+            self.state = 'input'
+            self.input_string += '.'
+            self.update_display()
+        else:
+            print(f'Input . not allowed here')
 
-    def on_minus_pressed(self, *args, **kwargs):
-        print('- is pressed')
-        print(args, kwargs)
-
-    def on_multiple_pressed(self, *args, **kwargs):
-        print('x is pressed')
-        print(args, kwargs)
-    
-    def on_divide_pressed(self, *args, **kwargs):
-        print('/ is pressed')
-        print(args, kwargs)
-
-    def on_positiveAndNegative_pressed(self, *args, **kwargs):
+    def on_plusminus_pressed(self, *args, **kwargs):
         print('+/- is pressed')
         print(args, kwargs)
+        if self.state == 'init':
+            self.num = -self.num
+            self.input_string = str(self.num)
+        else:
+            if '-' in self.input_string:
+                self.input_string = self.input_string[1:]
+            else:
+                self.input_string = '-' + self.input_string
+        self.update_display()
 
+    def on_ctrl_c_pressed(self, *args, **kwargs):
+        print('ctrl_c is pressed')
+        print(args, kwargs)
+        self.display.copy_to_clipboard(self.get_display_string())
+        
     def run(self):
         self.display.run()
 
 
-class Display():
-    def __init__(self):
-        OUTPUT_PADDING = 15
+def is_float(string: str) -> bool:
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
 
-        root = tk.Tk()
-        root.title('Easy Calculator')
-        root.geometry('400x500')
-
-        # make the keypad row expand
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_rowconfigure(0, weight=0)
-        root.grid_rowconfigure(1, weight=1)
-
-        # sub-frames
-        top_frame = tk.Frame(root)
-        top_frame.grid(row=0, column=0)
-
-        keypad_frame = tk.Frame(root)
-        keypad_frame.grid(row=1, column=0, sticky=tk.NSEW)
-
-        # top frame children
-        output_font = font.Font(size=20)
-        output_display = tk.Label(top_frame, text='', font=output_font,
-                                  justify='left', relief=tk.SUNKEN, bd=10, bg='white', width=40)
-        output_display.pack(padx=OUTPUT_PADDING, pady=OUTPUT_PADDING)
-
-        # keypad frame children
-        buttons = self._create_buttons(keypad_frame)
-
-        # make all rows / cols equaly expanded
-        for col in range(4):
-            keypad_frame.grid_columnconfigure(col, weight=1)
-        for row in range(5):
-            keypad_frame.grid_rowconfigure(row, weight=1)
-
-        self.root = root
-        self.top_frame = top_frame
-        self.keypad = keypad_frame
-        self.output_display = output_display
-        self.buttons = buttons
-
-    def _create_buttons(self, frame: tk.Frame) -> dict[str, tk.Button]:
-        BUTTON_NAMES = ['AC', 'DEL', '+/-', '/', '7', '8',
-                        '9', 'x', '4', '5', '6', '-', '1', '2', '3', '+', '%', '0', '.', '=']
-        BTN_FONT = font.Font(size=20)
-
-        buttons = {}
-        for index, name in enumerate(BUTTON_NAMES):
-            # for (row, column) in (0, 0), (0, 1), ..., (4, 3)
-            row = index // 4
-            column = index % 4
-            button = tk.Button(frame, text=name, font=BTN_FONT)
-            button.grid(row=row, column=column, sticky=tk.NSEW, padx=3, pady=3)
-            buttons[name] = button
-
-        return buttons
-
-    def run(self):
-        self.root.mainloop()
-
-    def on_press(self, button_name, callback):
-        self.buttons[button_name].bind('<Button-1>', callback)
+def perform_op(op: str, num_1: float, num_2: float) -> float:
+    if op == '+':
+        return num_1 + num_2
+    elif op == '-':
+        return num_1 - num_2
+    elif op == 'x':
+        return num_1 * num_2
+    elif op == '/':
+        return num_1 / num_2
+    elif op == '%':
+        return num_1 % num_2
+    else:
+        raise ValueError(f'Unknown operator "{op}"')
 
 
 if __name__ == '__main__':
