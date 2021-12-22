@@ -1,6 +1,10 @@
 # Easy Calculator
 ## FCU IECS 110-1A Computer Architecture Final Python Lab Independent Study
 
+#### Briefing Link: https://hackmd.io/@JerryHao/ryN6-B1oF#/
+
+#### Demo Video Link: https://youtu.be/40tOj1IJPik
+
 + Team name: **你已被管理員史丹利(relaxing234)永久禁言**
 + Team members: 蘇柏郡/Kazan(D1090481, Team leader), 趙家豪/Jerry(D1018525)
 + Tools: 
