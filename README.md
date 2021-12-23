@@ -20,7 +20,7 @@
 + Usage: Simulating a simple physical mathematical calculator
 + Language: Python 3.9.9
 + GUI dependency: Tcl/Tk Tkinter 8.6
-+ Project packaged: PyInstaller 4.5(from pyinstaller.org) 
++ Project packaged: PyInstaller 4.7(from pyinstaller.org) 
 
 ---
 
