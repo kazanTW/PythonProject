@@ -51,4 +51,4 @@
    python3 main.py
    ```
 
-if there are both Python 2 and 3 existing in your system.
+   if there are both Python 2 and 3 existing in your system.
