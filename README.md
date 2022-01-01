@@ -45,8 +45,10 @@
     python main.py
     ```
 
-or
+   or
 
-    python3 main.py
+   ```
+   python3 main.py
+   ```
 
 if there are both Python 2 and 3 existing in your system.
