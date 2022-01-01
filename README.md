@@ -52,3 +52,15 @@
    ```
 
    if there are both Python 2 and 3 existing in your system.
+
+----
+
+#### Install in local system
+
+1. As same as step 1 in *Directly Use*.
+2. Install **PyInstaller**(if you don't know how to install PyInstaller, please watch this: https://pyinstaller.readthedocs.io/en/stable/installation.html)
+3. Use command in terminal at the directory where `main.py` existing:
+
+    ```
+    pyinstaller -F main.py
+    ```
