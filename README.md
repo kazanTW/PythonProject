@@ -41,7 +41,9 @@
 2. Open a terminal at the directory where source code existing.
 3. Use command:
     
+    ```
     python main.py
+    ```
 
 or
 
