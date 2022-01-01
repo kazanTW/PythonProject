@@ -30,3 +30,17 @@
 + Briefing repprt making: Jerry
 + Document making: Kazan
 + Presentation: Kazan, Jerry
+
+---
+
+### Product Installation/Usage
+
+#### Directly Use
+
+1. Please put `display.py` and `main.py` into same directory
+2. Open a terminal at the directory where source code existing
+3. Use command:
+    `python main.py`
+or 
+    `python3 main.py`
+if there are both Python 2 and 3 existing in your system.
