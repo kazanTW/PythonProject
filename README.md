@@ -42,8 +42,8 @@
 3. Use command:
     
     `python main.py`
-
 or
+
     `python3 main.py`
 
 if there are both Python 2 and 3 existing in your system.
