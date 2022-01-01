@@ -41,10 +41,10 @@
 2. Open a terminal at the directory where source code existing.
 3. Use command:
     
-    `python main.py`
-    
+    python main.py
+
 or
 
-    `python3 main.py`
+    python3 main.py
 
 if there are both Python 2 and 3 existing in your system.
