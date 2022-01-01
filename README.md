@@ -42,6 +42,7 @@
 3. Use command:
     
     `python main.py`
+    
 or
 
     `python3 main.py`
